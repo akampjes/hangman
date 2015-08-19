@@ -1,29 +1,54 @@
 class HangMan
-  require_relative 'random_word'
-
-  attr_accessor :word, :word_progress, :tried_letters
-
-  def initialize(turns: 8)
-    random_word = RandomWord.new('words.txt')
-    self.word = random_word.get_word
-    self.word_progress = '_' * self.word.length
-    self.tried_letters = []
+  def initialize(word, turns: 8)
+    @word = word
+    @word_progress = '_' * @word.length
+    @tried_letters = []
     @turns = turns
 
     print_status
   end
 
   def play_turn(letter)
-    unless game_finished?
+    unless finished?
       try_letter(letter)
 
       print_status
     end
   end
 
+  def status
+    # I don't really like this
+    play_status = case
+                  when won?
+                    :won
+                  when lost?
+                    :lost
+                  else
+                    :playing
+                  end
+
+    # Otherwise like this
+    #case
+    #when won?
+    #  play_status = :won
+    #when lost?
+    #  play_status = :lost
+    #else
+    #  play_status = :playing
+    #end
+
+    {
+      word: @word,
+      word_progress: @word_progress,
+      tried_letters: @tried_letters,
+      remaining_turns: remaining_turns,
+      play_status: play_status,
+    }
+  end
+
   def print_status
     if won?
-      puts "Yus, #{self.word}!"
+      puts "Yus, #{@word}!"
       puts 'You survive to play again another day'
 
       false
@@ -32,9 +57,9 @@ class HangMan
 
       false
     else
-      puts "#{@turns - self.tried_letters.length} turns left"
-      puts self.word_progress
-      puts "Tried #{self.tried_letters.join(', ')}" if self.tried_letters.length > 0
+      puts "#{remaining_turns} turns left"
+      puts @word_progress
+      puts "Tried #{@tried_letters.join(', ')}" if @tried_letters.length > 0
 
       true
     end
@@ -44,11 +69,12 @@ class HangMan
 
   def validate_letter(letter)
     unless letter =~ /[[:alpha:]]/
+      # Maybe raise an exception on this?
       puts 'Not a valid alphabetical letter :('
       return false
     end
 
-    if self.word_progress.include?(letter) || self.tried_letters.include?(letter)
+    if @word_progress.include?(letter) || @tried_letters.include?(letter)
       puts "You've tried that already silly :P"
       return false
     end
@@ -61,25 +87,29 @@ class HangMan
 
     correct_guess = false
     # Add letter to word_progress or to tried_letters
-    self.word.chars.each_with_index do |char, i|
+    @word.chars.each_with_index do |char, i|
       if char == letter
-        self.word_progress[i] = letter
+        @word_progress[i] = letter
         correct_guess = true
       end
     end
 
-    self.tried_letters << letter unless correct_guess
+    @tried_letters << letter unless correct_guess
   end
 
-  def game_finished?
-    !((@turns - self.tried_letters.length > 0) && self.word_progress.include?('_'))
+  def finished?
+    won? || lost?
   end
 
   def won?
-    !self.word_progress.include?('_')
+    !@word_progress.include?('_')
   end
 
   def lost?
-    @turns - self.tried_letters.length <= 0
+    remaining_turns <= 0
+  end
+
+  def remaining_turns
+    @turns - @tried_letters.length
   end
 end
