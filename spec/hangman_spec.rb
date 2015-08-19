@@ -1,60 +1,85 @@
 require_relative '../hangman'
 
 RSpec.describe HangMan do
+  subject { HangMan.new('hang') }
 
-  describe "#get_letter" do
-    it "should read the first letter from STDIN" do
-      allow(STDIN).to receive(:gets) {'joe'}
-      expect(subject.get_letter).to eq 'j'
+  context "playing a game" do
+    it "should start" do
+      expect(subject.finished?).to be false
     end
 
-    it "should remove newlines" do
-      allow(STDIN).to receive(:gets) {"\n"}
-      expect(subject.get_letter).to eq nil
-    end
-  end
+    it "should be winnable" do
+      ['h','a','n','g'].each do |letter|
+        subject.play_turn letter
+      end
 
-  describe "#validate_letter" do
-    it "valid letter" do
-      expect(subject.validate_letter('a')).to be true
+      expect(subject.won?).to be true
     end
 
-    it "invalid letter" do
-      expect(subject.validate_letter('-')).to be false
+    it "should be losable" do
+      ['a','b','c','d','e','f','g','h','i','j','k','l','m'].each do |letter|
+        subject.play_turn letter
+      end
+
+      expect(subject.lost?).to be true
     end
 
-    it "should not allow the same letters tried" do
-      allow(subject).to receive(:tried_letters) {['a','b','c','d','e','f','g','h']}
+    it "should have word progress" do
+      subject.play_turn 'h'
+      subject.play_turn 'n'
 
-      expect(subject.validate_letter('a')).to be false
+      expect(subject.word_progress).to eq 'h_n_'
     end
 
-    it "should not allow the same letters tried word_progress" do
-      allow(subject).to receive(:word_progress) {'abcd'}
+    it "should have tried letters" do
+      subject.play_turn 'x'
 
-      expect(subject.validate_letter('a')).to be false
-    end
-  end
-
-  describe "#game_unfinished?" do
-    it "should be unfinished to start" do
-      expect(subject.game_finished?).to be false
-    end
-
-    it "should be finished when turns 8 failures" do
-      allow(subject).to receive(:tried_letters) {['a','b','c','d','e','f','g','h']}
-
-      expect(subject.game_finished?).to be true
-    end
-
-    it "should be finished on complete word" do
-      allow(subject).to receive(:word_progress) {'abcd'}
-
-      expect(subject.game_finished?).to be true
+      expect(subject.tried_letters).to include 'x'
     end
   end
 
-  describe "#check_letter" do
+  describe "#finished?" do
+    it "should start unfinished" do
+      expect(subject.finished?).to be false
+    end
 
+    it "should become finished when won" do
+      allow(subject).to receive(:won?) { true }
+
+      expect(subject.finished?).to be true
+    end
+
+    it "should become finished when lost" do
+      allow(subject).to receive(:lost?) { true }
+
+      expect(subject.finished?).to be true
+    end
+  end
+
+  describe "#lost?" do
+    it "should be lost when no turns left" do
+      allow(subject).to receive(:remaining_turns) { 0 }
+
+      expect(subject.lost?).to be true
+    end
+  end
+
+  describe "#remaining_turns" do
+    it "should should default to 8" do
+      expect(subject.remaining_turns).to eq 8
+    end
+
+    it "should be initializable to N turns" do
+      hangman = HangMan.new('hang', turns: 10)
+      
+      expect(hangman.remaining_turns).to eq 10
+    end
+
+    it "should decrease on incorrect inputs" do
+      subject.play_turn 'q'
+      subject.play_turn 'z'
+
+      expect(subject.remaining_turns).to eq 6
+    end
   end
 end

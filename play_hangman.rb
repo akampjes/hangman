@@ -1,4 +1,5 @@
 require_relative 'hangman'
+require_relative 'hangman_view'
 require_relative 'random_word'
 
 def get_letter
@@ -9,6 +10,12 @@ end
 random_word = RandomWord.new('words.txt').get_word
 hangman = HangMan.new(random_word)
 
-while hangman.status[:play_status] == :playing
-  hangman.play_turn(get_letter)
+HangManView.display_hangman(hangman)
+while !hangman.finished?
+  begin
+    hangman.play_turn(get_letter)
+  rescue => e
+    puts e
+  end
+  HangManView.display_hangman(hangman)
 end
