@@ -36,6 +36,15 @@ RSpec.describe HangMan do
 
       expect(subject.tried_letters).to include 'x'
     end
+
+    it "should except on non alpha letters" do
+      expect { subject.play_turn 5 }.to raise_error('Not a valid alphabetical letter :(')
+    end
+
+    it "should except repeated letters" do
+      subject.play_turn 'a'
+      expect { subject.play_turn 'a' }.to raise_error("You've tried that already silly :P")
+    end
   end
 
   describe "#finished?" do
