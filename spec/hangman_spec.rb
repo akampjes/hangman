@@ -77,12 +77,12 @@ RSpec.describe HangMan do
 
     context "exceptional input cases" do
       it "excepts on non alpha letters" do
-        expect { subject.play_turn 5 }.to raise_error('Not a valid alphabetical letter :(')
+        expect { subject.play_turn 5 }.to raise_error HangMan::InvalidLetterError
       end
 
       it "excepts repeated letters" do
         subject.play_turn 'a'
-        expect { subject.play_turn 'a' }.to raise_error("You've tried that already silly :P")
+        expect { subject.play_turn 'a' }.to raise_error HangMan::AlreadyUsedLetterError
       end
     end
   end

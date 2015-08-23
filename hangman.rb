@@ -1,6 +1,9 @@
 class HangMan
   attr_accessor :word, :word_progress, :tried_letters
 
+  class InvalidLetterError < StandardError ; end
+  class AlreadyUsedLetterError < StandardError ; end
+
   def initialize(word, turns: 8)
     self.word = word
     self.word_progress = '_' * self.word.length
@@ -34,11 +37,11 @@ class HangMan
 
   def validate_letter!(letter)
     unless letter =~ /[[:alpha:]]/
-      fail 'Not a valid alphabetical letter :('
+      fail InvalidLetterError
     end
 
     if self.word_progress.include?(letter) || self.tried_letters.include?(letter)
-      fail "You've tried that already silly :P"
+      fail AlreadyUsedLetterError
     end
 
     true

@@ -14,8 +14,10 @@ HangManView.display_hangman(hangman)
 while !hangman.finished?
   begin
     hangman.play_turn(get_letter)
-  rescue => e
-    puts e
+  rescue HangMan::InvalidLetterError => e
+    puts "Not a valid alphabetical Letter :("
+  rescue HangMan::AlreadyUsedLetterError => e
+    puts "You've already tried that letter silly :P"
   end
   HangManView.display_hangman(hangman)
 end
