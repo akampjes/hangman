@@ -1,4 +1,4 @@
-require_relative '../hangman'
+require_relative '../hang_man'
 
 RSpec.describe HangMan do
   subject { HangMan.new('hang') }

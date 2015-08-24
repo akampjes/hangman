@@ -1,4 +1,4 @@
-require_relative 'hangman'
+require_relative 'hang_man'
 require_relative 'hangman_view'
 require_relative 'random_word'
 
