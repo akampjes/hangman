@@ -1,7 +1,7 @@
 class HangManView
   def self.display_hangman(hangman)
     if hangman.won?
-      puts "Yus, #{hangman.won?}!"
+      puts "Yus, #{hangman.word_progress}."
       puts 'You survive to play again another day'
     elsif hangman.lost?
       puts 'Gahh choke die'

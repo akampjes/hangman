@@ -3,8 +3,7 @@ require_relative 'hangman_view'
 require_relative 'random_word'
 
 def get_letter
-  input = STDIN.gets.to_s.chomp
-  input[0]
+  STDIN.gets.to_s[0]
 end
 
 random_word = RandomWord.new('words.txt').get_word

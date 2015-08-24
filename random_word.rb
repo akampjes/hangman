@@ -5,7 +5,7 @@ class RandomWord
     @wordfile = wordfile
   end
 
-  def get_word()
+  def get_word
     lines = File.readlines(@wordfile)
     i = SecureRandom.random_number(lines.length)
     
