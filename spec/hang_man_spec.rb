@@ -73,6 +73,11 @@ RSpec.describe HangMan do
         subject.play_turn 'z'
         expect(subject.remaining_turns).to eq 6
       end
+
+      it "doesn't decrease on correct inputs" do
+        subject.play_turn 'a'
+        expect(subject.remaining_turns).to eq 8
+      end
     end
 
     context "exceptional input cases" do

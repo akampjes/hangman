@@ -27,7 +27,7 @@ class HangMan
   end
 
   def remaining_turns
-    @turns - tried_letters.length
+    @turns - tried_letters.reject { |letter| word.include?(letter)  }.length
   end
 
   def word_progress
